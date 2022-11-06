@@ -1,2 +1,2 @@
 # purpleAirHueIntegration
-Integration PurpleAir sensorts with Hue Integration
+Integration between PurpleAir sensors and Hue Lights
