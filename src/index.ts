@@ -1,11 +1,17 @@
 import * as dotenv from 'dotenv'
-import config from './config/config.json'
 import { HueApi } from './api/hueApi'
+import { PurpleAirApi } from './api/purpleAirApi'
+import { aqiFromPM } from './utils/aqiFromPM'
 
 dotenv.config()
 
 const hueApi = new HueApi()
 const userId = process.env.HUE_API_KEY || null
+const purpleAirReadApiKey = process.env.PURPLE_AIR_READ_API_KEY || ''
+const purpleAirWriteApiKey = process.env.PURPLE_AIR_WRITE_API_KEY || ''
+const homeAirSensorId = process.env.HOME_AIR_SENSOR || ''
+
+const purpleAirApi = new PurpleAirApi(purpleAirReadApiKey, purpleAirWriteApiKey)
 
 async function main() {
   try {
@@ -27,6 +33,16 @@ async function main() {
         console.log(`Light id ${id} doesn't exist`)
       }
     })
+
+    try {
+      const result = await purpleAirApi.getSensor(homeAirSensorId)
+      const { data } = result
+      const pm = data.sensor.stats['pm2.5_10minute']
+      const aqi = aqiFromPM(pm)
+      console.log(`Sensor ${data.sensor.name} AQI: ${aqi}`)
+    } catch (e) {
+      console.log(`Sensor ${homeAirSensorId} errored`, e)
+    }
   } catch (e) {
     const error = e as Error
     console.log('Error:', error.message)
