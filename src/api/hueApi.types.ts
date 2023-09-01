@@ -129,7 +129,7 @@ export interface HueLightState {
   hue: number // uint16: 0 to 65535
   sat: number // uint8:  0 to 254 (max saturation)
   effect: HueLightEffect
-  xy: [number, number] // [float, float] xy in CIE colorspace
+  xy: [number|string, number|string] // [float, float] xy in CIE colorspace
   ct: number // uint16:  Mired Color temperature of the light
   alert: HueLightAlert
   colormode: string

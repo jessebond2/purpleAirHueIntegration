@@ -86,6 +86,11 @@ axios@^1.1.3:
     form-data "^4.0.0"
     proxy-from-env "^1.1.0"
 
+cie-rgb-color-converter@^1.0.6:
+  version "1.0.6"
+  resolved "https://registry.yarnpkg.com/cie-rgb-color-converter/-/cie-rgb-color-converter-1.0.6.tgz#4414f20d07bd9ef74daacbd4cd10215be2bdf9eb"
+  integrity sha512-ox9KQRf1i8jFhE1d0cZGwGLyRWy03oFLUhXqr9XrD4XACNezejiarj/4VZnYcYHOifQcmY/JIC0HB1Nkv+nFZQ==
+
 combined-stream@^1.0.8:
   version "1.0.8"
   resolved "https://registry.yarnpkg.com/combined-stream/-/combined-stream-1.0.8.tgz#c3d45a8b34fd730631a110a8a2520682b31d5a7f"

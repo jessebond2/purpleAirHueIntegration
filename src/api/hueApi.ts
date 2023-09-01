@@ -20,6 +20,7 @@ interface UpdateLightOptions {
   sat?: number
   bri?: number
   hue?: number
+  xy?: [number, number]
 }
 
 export class HueApi {
@@ -49,7 +50,7 @@ export class HueApi {
   }
 
   async updateLight(userId: string, light: HueLight, data?: UpdateLightOptions) {
-    const route = HUE_ROUTES.LIGHT_STATE.replace(':userId', userId).replace(':lightId', light.modelid)
+    const route = HUE_ROUTES.LIGHT_STATE.replace(':userId', userId).replace(':lightId', light.id)
     try {
       await this.api.put(route, data)
     } catch (e) {

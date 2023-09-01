@@ -5,6 +5,7 @@ export enum AQI_COLORS {
   Red,
   Purple,
   Maroon,
+  Error,
 }
 
 interface RBGColor {
@@ -26,6 +27,7 @@ interface AQIColorValues {
   [AQI_COLORS.Red]: { rgb: RBGColor; cmyk: CMYKColor }
   [AQI_COLORS.Purple]: { rgb: RBGColor; cmyk: CMYKColor }
   [AQI_COLORS.Maroon]: { rgb: RBGColor; cmyk: CMYKColor }
+  [AQI_COLORS.Error]: { rgb: RBGColor; cmyk: CMYKColor }
 }
 
 export const AQI_COLOR_VALUES: AQIColorValues = {
@@ -52,5 +54,9 @@ export const AQI_COLOR_VALUES: AQIColorValues = {
   [AQI_COLORS.Maroon]: {
     rgb: { r: 126, g: 0, b: 35 },
     cmyk: { c: 30, m: 100, y: 100, k: 30 },
+  },
+  [AQI_COLORS.Error]: {
+    rgb: { r: 0, g: 0, b: 255 },
+    cmyk: { c: 100, m: 100, y: 0, k: 0 },
   },
 }
