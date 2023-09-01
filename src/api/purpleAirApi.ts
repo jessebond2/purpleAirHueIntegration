@@ -1,5 +1,5 @@
 import axios, { AxiosInstance, AxiosResponse } from 'axios'
-import { GetSensorResponse } from './hueApiTypes'
+import { GetSensorResponse } from './hueApi.types'
 
 export const PURPLE_AIR_ROUTES = {
   GET_SENSOR: '/v1/sensors/:sensorId',

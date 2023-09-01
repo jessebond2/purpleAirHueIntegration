@@ -1,8 +1,8 @@
 export interface GetSensorResponse {
-  api_version: string;
-  time_stamp: number;
-  data_time_stamps: number;
-  sensor: Sensor;
+  api_version: string
+  time_stamp: number
+  data_time_stamps: number
+  sensor: Sensor
 }
 
 export interface Sensor {
@@ -120,4 +120,47 @@ export interface SensorStats {
   'pm2.5_24hour': number
   'pm2.5_1week': number
   time_stamp: number
+}
+
+export interface HueLightState {
+  on: boolean
+  bri: number // brightness
+  hue: number
+  sat: number
+  effect: string
+  xy: []
+  ct: number
+  alert: string
+  colormode: string
+  mode: string
+  reachable: boolean
+}
+
+export interface HueLight {
+  id: string;
+  state: HueLightState
+  swupdate: {
+    state: string
+    lastinstall: string
+  }
+  type: string
+  name: string
+  modelid: string
+  manufacturername: string
+  productname: string
+  capabilities: {
+    certified: boolean
+    control: any
+    streaming: any
+  }
+  config: {
+    archetype: string
+    function: string
+    difrection: string
+    startup: any
+  }
+  uniqueid: string
+  swversion: string
+  swconfigid: string
+  productid: string
 }

@@ -1,6 +1,7 @@
 import axios, { AxiosInstance } from 'axios'
 import https from 'https'
 import { hueBridgeIp } from '../config/config.json'
+import { HueLight } from './hueApi.types'
 
 export const HUE_ROUTES = {
   DEBUG: `/debug/clip.html`,
@@ -35,18 +36,25 @@ export class HueApi {
     return this.api.post(HUE_ROUTES.CREATE_USER, data)
   }
 
-  getLights(userId: string) {
+  async getLights(userId: string): Promise<HueLight[]> {
     const route = HUE_ROUTES.LIGHTS.replace(':userId', userId)
-    return this.api.get(route)
+    const records = (await this.api.get<Record<string, Omit<HueLight, 'id'>>>(route)).data
+
+    return Object.entries(records).map(([id, rawLight]) => ({ ...rawLight, id }))
   }
 
   getLight(userId: string, lightId: string) {
     const route = HUE_ROUTES.LIGHTS.replace(':userId', userId).replace(':lightId', lightId)
-    return this.api.get(route)
+    return this.api.get<HueLight>(route)
   }
 
-  updateLight(userId: string, lightId: string, data?: UpdateLightOptions) {
-    const route = HUE_ROUTES.LIGHT_STATE.replace(':userId', userId).replace(':lightId', lightId)
-    return this.api.put(route, data)
+  async updateLight(userId: string, light: HueLight, data?: UpdateLightOptions) {
+    const route = HUE_ROUTES.LIGHT_STATE.replace(':userId', userId).replace(':lightId', light.modelid)
+    try {
+      await this.api.put(route, data)
+    } catch (e) {
+      let error = e as Error
+      console.log(`Error updating light ${light.name}`, error.message)
+    }
   }
 }

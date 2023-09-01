@@ -1,9 +1,9 @@
-import * as dotenv from 'dotenv'
+import { config } from 'dotenv'
 import { HueApi } from './api/hueApi'
 import { PurpleAirApi } from './api/purpleAirApi'
 import { aqiFromPM } from './utils/aqiFromPM'
 
-dotenv.config()
+config()
 
 const hueApi = new HueApi()
 const userId = process.env.HUE_API_KEY || null
@@ -21,19 +21,13 @@ async function main() {
       return
     }
 
-    const lights: Record<string, Record<string, string>> = (await hueApi.getLights(userId)).data
-    //console.log(lights)
+    const lights = await hueApi.getLights(userId)
 
-    Object.entries(lights).forEach(async ([id, data]) => {
-      console.log(`Updating light ${data.name}`)
-      try {
-        const res = await hueApi.updateLight(userId, id, { on: true, sat: 254, bri: 254, hue: 10000 })
-        console.log(res.status, res.data)
-      } catch (e) {
-        console.log(`Light id ${id} doesn't exist`)
-      }
+    lights.forEach(async (light) => {
+      console.log(`Updating light ${light.name}`)
+      await hueApi.updateLight(userId, light, { on: true, sat: 254, bri: 254, hue: 10000 })
     })
-
+    return
     try {
       const result = await purpleAirApi.getSensor(homeAirSensorId)
       const { data } = result
