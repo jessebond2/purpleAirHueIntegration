@@ -122,22 +122,46 @@ export interface SensorStats {
   time_stamp: number
 }
 
+// https://developers.meethue.com/develop/hue-api/lights-api/
 export interface HueLightState {
   on: boolean
-  bri: number // brightness
-  hue: number
-  sat: number
-  effect: string
-  xy: []
-  ct: number
-  alert: string
+  bri: number // uint8:  1 to 254
+  hue: number // uint16: 0 to 65535
+  sat: number // uint8:  0 to 254 (max saturation)
+  effect: HueLightEffect
+  xy: [number, number] // [float, float] xy in CIE colorspace
+  ct: number // uint16:  Mired Color temperature of the light
+  alert: HueLightAlert
   colormode: string
   mode: string
   reachable: boolean
 }
 
+export enum HueLightEffect {
+  NONE = 'none',
+  COLORLOOP = 'COLORLOOP',
+}
+
+/**
+ * Indicates the color mode in which the light is working,
+ * this is the last command type it received. Values are “hs”
+ * for Hue and Saturation, “xy” for XY and “ct” for Color Temperature.
+ * This parameter is only present when the light supports at least
+ * one of the values.
+ */
+export enum HueLightColorMode {
+  HS = 'hs',
+  CT = 'ct',
+}
+
+export enum HueLightAlert {
+  NONE = 'none', // The light is not performing an alert effect
+  SELECT = 'select', // The light is performing one breathe cycle
+  LSELECT = 'lselect', // The light is performing breathe cycles for 15 seconds or until an "alert": "none" command is received
+}
+
 export interface HueLight {
-  id: string;
+  id: string
   state: HueLightState
   swupdate: {
     state: string

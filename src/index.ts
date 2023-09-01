@@ -27,7 +27,7 @@ async function main() {
       console.log(`Updating light ${light.name}`)
       await hueApi.updateLight(userId, light, { on: true, sat: 254, bri: 254, hue: 10000 })
     })
-    return
+    
     try {
       const result = await purpleAirApi.getSensor(homeAirSensorId)
       const { data } = result
