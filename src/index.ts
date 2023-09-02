@@ -45,11 +45,10 @@ async function main() {
 
     lights.forEach(async (light) => {
       console.log(`Updating light ${light.name}`)
-      // await hueApi.updateLight(userId, light, { on: true, sat: 254, bri: 254, hue: 10000 })
       const { r, b, g } = color.rgb
       const { x, y } = ColorConverter.rgbToXy(r, g, b, light.modelid)
       const xy: [number, number] = [+x.toFixed(4), +y.toFixed(4)]
-      await hueApi.updateLight(userId ?? '', light, { on: true, bri: 254, xy })
+      await hueApi.updateLight(userId ?? '', light, { on: true, xy })
     })
   } catch (e) {
     const error = e as Error
