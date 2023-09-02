@@ -12,6 +12,9 @@ const userId = process.env.HUE_API_KEY || null
 const purpleAirReadApiKey = process.env.PURPLE_AIR_READ_API_KEY || ''
 const purpleAirWriteApiKey = process.env.PURPLE_AIR_WRITE_API_KEY || ''
 const homeAirSensorId = process.env.HOME_AIR_SENSOR || ''
+const defaultLights = (process.env.DEFAULT_LIGHTS ?? '').split(',') || []
+
+console.log(defaultLights)
 
 const purpleAirApi = new PurpleAirApi(purpleAirReadApiKey, purpleAirWriteApiKey)
 
@@ -23,21 +26,22 @@ async function main() {
       return
     }
 
-    const lights = await hueApi.getLights(userId)
+    const allLights = await hueApi.getLights(userId)
+    const lights = allLights.filter((light) => defaultLights.includes(light.name))
 
-    let color
+    let pm
     try {
       const result = await purpleAirApi.getSensor(homeAirSensorId)
       const { data } = result
-      const pm = data.sensor.stats['pm2.5_10minute']
+      pm = data.sensor.stats['pm2.5_10minute']
       const aqi = aqiFromPM(pm)
       console.log(`Sensor ${data.sensor.name} AQI: ${aqi}`)
-      color = colorFromPm(pm)
     } catch (e) {
       console.log(`Sensor ${homeAirSensorId} errored`, e)
-
-      color = colorFromPm(-1)
+      pm = -1
     }
+
+    const color = colorFromPm(pm)
 
     lights.forEach(async (light) => {
       console.log(`Updating light ${light.name}`)
@@ -45,7 +49,7 @@ async function main() {
       const { r, b, g } = color.rgb
       const { x, y } = ColorConverter.rgbToXy(r, g, b, light.modelid)
       const xy: [number, number] = [+x.toFixed(4), +y.toFixed(4)]
-      await hueApi.updateLight(userId, light, { on: true, bri: 254, xy })
+      await hueApi.updateLight(userId ?? '', light, { on: true, bri: 254, xy })
     })
   } catch (e) {
     const error = e as Error
