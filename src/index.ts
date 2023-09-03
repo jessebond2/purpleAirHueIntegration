@@ -2,8 +2,9 @@ import { config } from 'dotenv'
 import ColorConverter from 'cie-rgb-color-converter'
 import { HueApi } from './api/hueApi'
 import { PurpleAirApi } from './api/purpleAirApi'
-import { aqiFromPM, colorFromPm } from './utils/aqi'
-import { AQI_COLORS, AQI_COLOR_VALUES } from './constants/aqi'
+import { aqiFromPM, colorFromPm, colorGradientFromPm } from './utils/aqi'
+import { AQI_COLORS, AQI_COLOR_VALUES, ColorValues } from './constants/aqi'
+import { HueLight } from './api/hueApi.types'
 
 config()
 
@@ -17,6 +18,19 @@ const defaultLights = (process.env.DEFAULT_LIGHTS ?? '').split(',') || []
 console.log(defaultLights)
 
 const purpleAirApi = new PurpleAirApi(purpleAirReadApiKey, purpleAirWriteApiKey)
+
+async function wait(ms: number) {
+  return new Promise<void>((resolve) => {
+    setTimeout(() => {
+      console.log('done waiting', ms)
+      resolve()
+    }, ms)
+  })
+}
+
+function sleep(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms))
+}
 
 async function main() {
   try {
@@ -41,14 +55,29 @@ async function main() {
       pm = -1
     }
 
-    const color = colorFromPm(pm)
-
-    lights.forEach(async (light) => {
-      console.log(`Updating light ${light.name}`)
-      const { r, b, g } = color.rgb
+    const airQualityColor = colorGradientFromPm(pm)
+    const setColor = async (userId = '', light: HueLight, color: ColorValues) => {
+      let { r, b, g } = color.rgb
       const { x, y } = ColorConverter.rgbToXy(r, g, b, light.modelid)
       const xy: [number, number] = [+x.toFixed(4), +y.toFixed(4)]
       await hueApi.updateLight(userId ?? '', light, { on: true, xy })
+    }
+
+    lights.forEach(async (light) => {
+      // for (const { rgb } of Object.values(AQI_COLOR_VALUES)) {
+      //   const { x, y } = ColorConverter.rgbToXy(rgb.r, rgb.g, rgb.b, light.modelid)
+      //   const xy: [number, number] = [+x.toFixed(4), +y.toFixed(4)]
+
+      //   console.log('updating', light.name, xy)
+      //   await hueApi.updateLight(userId ?? '', light, { on: true, xy })
+      //   await sleep(1000)
+      // }
+      await setColor(userId, light, AQI_COLOR_VALUES[AQI_COLORS.Error])
+      console.log(`Updating light ${light.name}, to blue`)
+      await sleep(1000)
+
+      console.log(`Updating light ${light.name}`)
+      await setColor(userId, light, airQualityColor)
     })
   } catch (e) {
     const error = e as Error
