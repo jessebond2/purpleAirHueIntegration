@@ -1,6 +1,7 @@
 {
   "name": "purpleAirHueIntegration",
   "packageManager": "yarn@1.16.0",
+  "version": "0.1.0",
   "scripts": {
     "start": "ts-node src/index.ts"
   },
